@@ -93,9 +93,9 @@ let cutoff=new Date(today);cutoff.setMonth(cutoff.getMonth()-1);
 if(d>cutoff){out.innerHTML=`<div class="result warn"><div class="big">判定対象外</div>発売から1ヶ月未満です。<div class="note">この抜き取りルールは発売から1ヶ月経過後に適用されます。</div></div>`;return}
 let text='';
 if(total<=1){text='<div class="big">1冊残し</div>カタログに差し落とし';}
-else if(total>=2){text='<div class="big">3冊残し</div>カタログ平台もしくは差し落とし';}
-else if(inactive<=20 && total>=3 && total<=6){text='<div class="big">抜き取りなし</div>新刊棚前平台に7冊まで・1面';}
 else if(total>=7){text='<div class="big">抜き取りなし</div>ピックアップ棚に置きっぱなし、もしくは新刊棚前平台に1〜2面';}
+else if(inactive<=20 && total>=3 && total<=6){text='<div class="big">抜き取りなし</div>新刊棚前平台に7冊まで・1面';}
+else if(total>=2){text='<div class="big">3冊残し</div>カタログ平台もしくは差し落とし';}
 else{text='<div class="big">追加確認が必要</div>現在の登録ルールではこの条件を一意に判定できません。';}
 out.innerHTML=`<div class="result">${text}<hr><b>判定理由</b><div class="note">発売から1ヶ月以上／未稼働 ${inactive}日／累計販売 ${total}冊</div></div>`;
 }
