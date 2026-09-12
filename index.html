@@ -47,7 +47,7 @@ label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}input,selec
 <div class="card">
 <h1>抜き取り判定</h1><div class="muted">まず、どの抜き取り作業かを選択してください。</div>
 <div class="grid2">
-<div><label>ジャンル</label><select id="jgenre" onchange="updateSeriesFields()">
+<div><label>ジャンル</label><select id="jgenre">
 <option>国内文庫</option><option>時代文庫</option><option>キャラクター文庫</option><option>海外文庫</option><option>教養文庫</option><option>ラノベ文庫</option><option>学術文庫</option>
 </select></div>
 <div><label>抜き取りの種類</label><select id="condition" onchange="updateJudgeFields()">
@@ -84,108 +84,16 @@ label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}input,selec
 <script>
 const exceptions=JSON.parse(localStorage.getItem('bookExceptions')||'{}');
 const genreRules={
-"国内文庫":`【国内文庫・新刊】
-発売から1ヶ月未満：このルールの対象外
-
-累計販売 0〜1冊
-未稼働日数に関わらず、基本1冊残し。カタログに差し落とし。
-※最終納品日が最近である場合は返本しない。
-
-未稼働20日以上 ＆ 累計販売2冊〜
-基本3冊残し。カタログ平台もしくは差し落とし。
-
-未稼働20日以内 ＆ 累計販売3〜6冊
-抜き取りなし。新刊棚前平台に7冊まで1面置き。
-
-累計販売7冊以上
-未稼働日数に関わらず抜き取りなし。ピックアップ棚に置きっぱなし、もしくは新刊棚前平台に1面または2面置き。`,
-"時代文庫":`【時代文庫・新刊】
-発売から1ヶ月未満：このルールの対象外
-
-累計販売 0〜1冊
-未稼働日数に関わらず、基本1冊残し。カタログに差し落とし。
-※最終納品日が最近である場合は返本しない。
-
-未稼働20日以上 ＆ 累計販売2冊〜
-基本3冊残し。カタログ平台もしくは差し落とし。
-
-未稼働20日以内 ＆ 累計販売3〜6冊
-抜き取りなし。新刊棚前平台に7冊まで1面置き。
-
-累計販売7冊以上
-未稼働日数に関わらず抜き取りなし。ピックアップ棚に置きっぱなし、もしくは新刊棚前平台に1面または2面置き。`,
-"キャラクター文庫":`【キャラクター文庫・新刊】
-発売から1ヶ月未満：このルールの対象外
-
-累計販売 0〜1冊
-未稼働日数に関わらず、基本1冊残し。カタログに差し落とし。
-※最終納品日が最近である場合は返本しない。
-※シリーズもののみ、棚前平台に前作があれば、前作と同じ冊数を平積み（売れてないものと入れ替え）。
-
-累計販売2冊〜
-未稼働日数に関わらず、基本3冊残し。カタログに差し落とし。
-※シリーズもののみ、棚前平台に前作があれば、前作と同じ冊数を平積み（売れてないものと入れ替え）。
-
-累計販売3冊〜
-未稼働日数に関わらず、抜き取りなしで新刊棚に継続展開。
-※シリーズものは、棚前平台に前作があれば、前作と同じ冊数を平積み。`,
-"海外文庫":`【海外文庫・新刊】
-発売から1ヶ月未満：このルールの対象外
-
-累計販売 0〜1冊
-未稼働日数に関わらず、基本1冊残し。カタログに差し落とし。
-※最終納品日が最近である場合は返本しない。
-※シリーズもののみ、棚前平台に前作があれば、前作と同じ冊数を平積み（売れてないものと入れ替え）。
-
-累計販売2冊〜
-未稼働日数に関わらず、基本3冊残し。カタログに差し落とし。
-※シリーズもののみ、棚前平台に前作があれば、前作と同じ冊数を平積み（売れてないものと入れ替え）。
-
-累計販売3冊〜
-未稼働日数に関わらず、抜き取りなしで新刊棚に継続展開。
-※シリーズものは、棚前平台に前作があれば、前作と同じ冊数を平積み。`,
-"教養文庫":`【教養文庫・新刊】
-発売から1ヶ月未満：このルールの対象外
-
-累計販売 0〜1冊
-未稼働日数に関わらず、基本1冊残し。カタログに差し落とし。
-※最終納品日が最近である場合は返本しない。
-
-累計販売2冊〜
-未稼働日数に関わらず、基本3冊残し。カタログ差し落とし。
-
-累計販売3冊〜
-未稼働日数に関わらず、抜き取りなし。カタログ前平台に落とす（売れてないものと入れ替え）。`,
-"ラノベ文庫":`【ラノベ文庫・新刊】
-発売から1ヶ月未満：このルールの対象外
-
-累計販売 0〜1冊
-未稼働日数に関わらず、基本1冊残し。カタログに差し落とし。
-※最終納品日が最近である場合は返本しない。
-
-累計販売2冊〜
-未稼働日数に関わらず、基本3冊残し。カタログ差し落とし。
-
-累計販売3冊〜
-未稼働日数に関わらず、抜き取りなしでカタログに面展開。
-※シリーズものは、アイラインに前作があれば、前作と同じ冊数をアイライン展開。`,
-"学術文庫":`【学術文庫・新刊】
-発売から1ヶ月未満：このルールの対象外
-
-累計販売 0〜1冊
-未稼働日数に関わらず、基本1冊残し。カタログに差し落とし。
-※最終納品日が最近である場合は返本しない。
-
-累計販売2冊〜
-未稼働日数に関わらず、基本3冊残し。カタログ差し落とし。
-
-累計販売3冊〜
-未稼働日数に関わらず、抜き取りなしでカタログに面展開。
-※シリーズものは、アイラインに前作があれば、前作と同じ冊数をアイライン展開。`
+"国内文庫":"",
+"時代文庫":"",
+"キャラクター文庫":"",
+"海外文庫":"",
+"教養文庫":"",
+"ラノベ文庫":"",
+"学術文庫":""
 };
-function show(id,btn){document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');if(id==='admin')renderList();if(id==='search')renderGenreRule();if(id==='judge')updateSeriesFields()}
+function show(id,btn){document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');if(id==='admin')renderList();if(id==='search')renderGenreRule();}
 function renderGenreRule(){const g=document.getElementById('genre').value;document.getElementById('genreRule').textContent=genreRules[g]||'ルール未登録';}
-function updateSeriesFields(){}
 function searchISBN(){let i=document.getElementById('isbn').value.replace(/[-\s]/g,'');let e=exceptions[i];document.getElementById('isbnResult').innerHTML=e?`<div class="result warn"><span class="pill">${e.type}</span><div class="big">${e.action}</div><b>${e.title||'登録ISBN'}</b><div class="note">${e.note||''}</div></div>`:`<div class="result"><b>登録された例外ISBNではありません</b><div class="note">通常ルールで判定します。</div></div>`}
 function updateJudgeFields(){
  const c=document.getElementById('condition').value;
@@ -195,44 +103,59 @@ function updateJudgeFields(){
  if(!isNew) document.getElementById('release').value='';
 }
 function judge(){
-let rel=document.getElementById('release').value, inactive=+document.getElementById('inactive').value,total=+document.getElementById('total').value,genre=document.getElementById('jgenre').value,condition=document.getElementById('condition').value;
-let out=document.getElementById('judgeResult');
-if(condition!=='新刊落とし'){
- out.innerHTML='<div class="result warn"><div class="big">判定ルール未登録</div>この作業のルールはこれから登録します。</div>';return;
+ let condition=document.getElementById('condition').value;
+ let rel=document.getElementById('release').value;
+ let inactive=+document.getElementById('inactive').value;
+ let total=+document.getElementById('total').value;
+ let genre=document.getElementById('jgenre').value;
+ let rank=document.getElementById('rank').value;
+ let recent30=document.getElementById('recent30').value;
+ let out=document.getElementById('judgeResult');
+
+ // 面陳入れ替え・過剰抜き取りは、発売日を使わず、ランクを選択できる。
+ // ただし現在は判定ルール未登録なので、入力内容を使って自動判定しない。
+ if(condition!=='新刊落とし'){
+   out.innerHTML=`<div class="result warn"><div class="big">判定ルール未登録</div>${condition}のルールはこれから登録します。<div class="note">ジャンル：${genre}／大ジャンルランク：${rank}</div></div>`;
+   return;
+ }
+
+ if(!rel){out.innerHTML='<div class="result bad">発売日を入力してください。</div>';return}
+ let d=new Date(rel), today=new Date();
+ d.setHours(0,0,0,0);today.setHours(0,0,0,0);
+ let cutoff=new Date(today);cutoff.setMonth(cutoff.getMonth()-1);
+ if(d>cutoff){out.innerHTML=`<div class="result warn"><div class="big">判定対象外</div>発売から1ヶ月未満です。<div class="note">この抜き取りルールは発売から1ヶ月経過後に適用されます。</div></div>`;return}
+ let text='', reason='';
+ if(genre==='国内文庫'||genre==='時代文庫'){
+  if(total<=1){text='<div class="big">1冊残し</div>カタログに差し落とし<div class="note">※最終納品日が最近である場合は返本しない。</div>';reason='累計販売0〜1冊';}
+  else if(total>=7){text='<div class="big">抜き取りなし</div>ピックアップ棚に置きっぱなし、もしくは新刊棚前平台に1面または2面置き';reason='累計販売7冊以上';}
+  else if(inactive<=20 && total>=3 && total<=6){text='<div class="big">抜き取りなし</div>新刊棚前平台に7冊まで・1面';reason='未稼働20日以内／累計販売3〜6冊';}
+  else if(inactive>=20 && total>=2){text='<div class="big">3冊残し</div>カタログ平台もしくは差し落とし';reason='未稼働20日以上／累計販売2冊〜';}
+  else if(total>=2){text='<div class="big">追加確認が必要</div>累計販売2冊・未稼働20日未満は現在のルールでは指定がありません。';reason='累計販売2冊／未稼働20日未満';}
+  else{text='<div class="big">追加確認が必要</div>現在の登録ルールではこの条件を一意に判定できません。';}
+ } else if(['キャラクター文庫','海外文庫'].includes(genre)){
+  if(total<=1){text='<div class="big">1冊残し</div>カタログに差し落とし<div class="note">※最終納品日が最近である場合は返本しない。</div>';reason='累計販売0〜1冊';}
+  else if(total>=3){text='<div class="big">抜き取りなし</div>新刊棚に継続展開';reason='累計販売3冊以上';}
+  else{text='<div class="big">3冊残し</div>カタログに差し落とし';reason='累計販売2冊';}
+ } else if(genre==='教養文庫'){
+  if(total<=1){text='<div class="big">1冊残し</div>カタログに差し落とし<div class="note">※最終納品日が最近である場合は返本しない。</div>';reason='累計販売0〜1冊';}
+  else if(total>=3){text='<div class="big">抜き取りなし</div>カタログ前平台に落とす（売れてないものと入れ替え）';reason='累計販売3冊以上';}
+  else{text='<div class="big">3冊残し</div>カタログ差し落とし';reason='累計販売2冊';}
+ } else if(['ラノベ文庫','学術文庫'].includes(genre)){
+  if(total<=1){text='<div class="big">1冊残し</div>カタログに差し落とし<div class="note">※最終納品日が最近である場合は返本しない。</div>';reason='累計販売0〜1冊';}
+  else if(total>=3){text='<div class="big">抜き取りなし</div>カタログに面展開';reason='累計販売3冊以上';}
+  else{text='<div class="big">3冊残し</div>カタログ差し落とし';reason='累計販売2冊';}
+ }
+ let note='';
+ if((genre==='キャラクター文庫'||genre==='海外文庫') && total<=1) note='※シリーズもののみ、棚前平台に前作があれば、前作と同じ冊数を平積み（売れてないものと入れ替え）。';
+ if((genre==='キャラクター文庫'||genre==='海外文庫') && total>=2 && total<3) note='※シリーズもののみ、棚前平台に前作があれば、前作と同じ冊数を平積み（売れてないものと入れ替え）。';
+ if((genre==='キャラクター文庫'||genre==='海外文庫') && total>=3) note='※シリーズものは、棚前平台に前作があれば、前作と同じ冊数を平積み。';
+ if((genre==='ラノベ文庫'||genre==='学術文庫') && total>=3) note='※シリーズものは、アイラインに前作があれば、前作と同じ冊数をアイライン展開。';
+ out.innerHTML=`<div class="result">${text}${note?'<div class="note" style="margin-top:10px">'+note+'</div>':''}<hr><b>判定理由</b><div class="note">${genre}／${condition}／未稼働 ${inactive}日／累計販売 ${total}冊${reason?'／'+reason:''}</div></div>`;
 }
-if(!rel){out.innerHTML='<div class="result bad">発売日を入力してください。</div>';return}
-let d=new Date(rel), today=new Date();d.setHours(0,0,0,0);today.setHours(0,0,0,0);let cutoff=new Date(today);cutoff.setMonth(cutoff.getMonth()-1);
-if(d>cutoff){out.innerHTML=`<div class="result warn"><div class="big">判定対象外</div>発売から1ヶ月未満です。<div class="note">この抜き取りルールは発売から1ヶ月経過後に適用されます。</div></div>`;return}
-let text='', reason='';
-if(genre==='国内文庫'||genre==='時代文庫'){
- if(total<=1){text='<div class="big">1冊残し</div>カタログに差し落とし<div class="note">※最終納品日が最近である場合は返本しない。</div>';reason='累計販売0〜1冊';}
- else if(total>=7){text='<div class="big">抜き取りなし</div>ピックアップ棚に置きっぱなし、もしくは新刊棚前平台に1面または2面置き';reason='累計販売7冊以上';}
- else if(inactive<=20 && total>=3 && total<=6){text='<div class="big">抜き取りなし</div>新刊棚前平台に7冊まで・1面';reason='未稼働20日以内／累計販売3〜6冊';}
- else if(inactive>=20 && total>=2){text='<div class="big">3冊残し</div>カタログ平台もしくは差し落とし';reason='未稼働20日以上／累計販売2冊〜';}
- else if(total>=2){text='<div class="big">追加確認が必要</div>累計販売2冊・未稼働20日未満は現在のルールでは指定がありません。';reason='累計販売2冊／未稼働20日未満';}
- else{text='<div class="big">追加確認が必要</div>現在の登録ルールではこの条件を一意に判定できません。';}
-} else if(['キャラクター文庫','海外文庫'].includes(genre)){
- if(total<=1){text='<div class="big">1冊残し</div>カタログに差し落とし<div class="note">※最終納品日が最近である場合は返本しない。</div>';reason='累計販売0〜1冊';}
- else if(total>=3){text='<div class="big">抜き取りなし</div>新刊棚に継続展開';reason='累計販売3冊以上';}
- else {text='<div class="big">3冊残し</div>カタログに差し落とし';reason='累計販売2冊';}
-} else if(genre==='教養文庫'){
- if(total<=1){text='<div class="big">1冊残し</div>カタログに差し落とし<div class="note">※最終納品日が最近である場合は返本しない。</div>';reason='累計販売0〜1冊';}
- else if(total>=3){text='<div class="big">抜き取りなし</div>カタログ前平台に落とす（売れてないものと入れ替え）';reason='累計販売3冊以上';}
- else {text='<div class="big">3冊残し</div>カタログ差し落とし';reason='累計販売2冊';}
-} else if(['ラノベ文庫','学術文庫'].includes(genre)){
- if(total<=1){text='<div class="big">1冊残し</div>カタログに差し落とし<div class="note">※最終納品日が最近である場合は返本しない。</div>';reason='累計販売0〜1冊';}
- else if(total>=3){text='<div class="big">抜き取りなし</div>カタログに面展開';reason='累計販売3冊以上';}
- else {text='<div class="big">3冊残し</div>カタログ差し落とし';reason='累計販売2冊';}
-}
-let note='';
-if((genre==='キャラクター文庫'||genre==='海外文庫') && total<=1) note='※シリーズもののみ、棚前平台に前作があれば、前作と同じ冊数を平積み（売れてないものと入れ替え）。';
-if((genre==='キャラクター文庫'||genre==='海外文庫') && total>=2) note='※シリーズもののみ、棚前平台に前作があれば、前作と同じ冊数を平積み（売れてないものと入れ替え）。';
-if((genre==='キャラクター文庫'||genre==='海外文庫') && total>=3) note='※シリーズものは、棚前平台に前作があれば、前作と同じ冊数を平積み。';
-if((genre==='ラノベ文庫'||genre==='学術文庫') && total>=3) note='※シリーズものは、アイラインに前作があれば、前作と同じ冊数をアイライン展開。';
-out.innerHTML=`<div class="result">${text}${note?'<div class="note" style="margin-top:10px">'+note+'</div>':''}<hr><b>判定理由</b><div class="note">${genre}／${condition}／未稼働 ${inactive}日／累計販売 ${total}冊${reason?'／'+reason:''}</div></div>`;
-}
+
 function saveException(){let i=document.getElementById('aIsbn').value.replace(/[-\s]/g,'');if(!i){alert('ISBNを入力してください');return}exceptions[i]={title:document.getElementById('aTitle').value,type:document.getElementById('aType').value,action:document.getElementById('aAction').value,note:document.getElementById('aNote').value};localStorage.setItem('bookExceptions',JSON.stringify(exceptions));renderList();alert('登録しました');}
 function renderList(){let arr=Object.entries(exceptions);document.getElementById('adminList').innerHTML='<h2 style="margin-top:22px">登録済みISBN</h2>'+ (arr.length?arr.map(([i,e])=>`<div class="card" style="margin:8px 0;padding:12px"><b>${i}</b><br>${e.title||''} <span class="pill">${e.type}</span><br><strong>${e.action}</strong><div class="note">${e.note||''}</div></div>`).join(''):'<div class="muted">まだありません。</div>')}
-renderGenreRule();updateSeriesFields();updateJudgeFields();
+renderGenreRule();
+updateJudgeFields();
 </script>
 </body></html>
